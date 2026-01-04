@@ -26,7 +26,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   // 🔥 RAG 邏輯
   // ==========================================
   const context = await retrieveContext(prompt);
-
   let systemPrompt = options.prompt || "你是一個有用的 AI 助手";
 
   if (context) {
@@ -79,7 +78,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 const requestStream = async(payload: StreamPayload) => {
   let counter = 0;
-  const baseUrl = process.env.END_POINT || "https://api.openai.com";
+  // 確保 baseUrl 永遠有一個合法的預設值
+  const rawBaseUrl = process.env.END_POINT?.trim();
+  const baseUrl = (rawBaseUrl && rawBaseUrl !== "") ? rawBaseUrl : "https://api.openai.com";
 
   const resp = await fetch(`${baseUrl}/v1/chat/completions`, {
     headers: {
